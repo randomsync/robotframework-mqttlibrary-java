@@ -1,0 +1,24 @@
+| *Settings* | *Value*
+| Library    | MQTTLibrary
+| Library    | BuiltIn
+     
+| *Variables*   | *Value*
+| ${broker.uri} | tcp://127.0.0.1:1883
+| ${client.id}  | test.client
+| ${topic}      | test.topic
+
+| *Test Case*   | *Action*                      | *Argument*    | *Argument*    | *Argument*
+| Initial Test
+|               | ${time}                           | Get Time      | epoch
+|               | ${message}                        | Catenate      | test message  | ${time}
+|               | Publish to MQTT and Disconnect    | ${broker.uri} | ${client.id}  |
+|               | ...                               | ${topic}      | ${message}
+|               | Log                               | ${message}
+    
+| *Keywords*    |
+| Publish to MQTT and Disconnect    | [Documentation]   | Publish a message to MQTT queue and disconnect
+|                                   | [Arguments]       | ${broker.uri} | ${client.id}
+|                                   | ...               | ${topic}      | ${message}
+|               | Connect to MQTT Broker        | ${broker.uri} | ${client.id}
+|               | Publish to MQTT Synchronously | ${topic}      | ${message}
+|               | Disconnect from MQTT Broker   |
