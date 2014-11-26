@@ -58,6 +58,34 @@
     </plugins>
   </build>
 
+  <profiles>
+    <profile>
+      <id>UseEclipseBroker</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.robotframework</groupId>
+            <artifactId>robotframework-maven-plugin</artifactId>
+            <version>1.4.3</version>
+            <executions>
+              <execution>
+                <phase>integration-test</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <variables>
+                    <variable>broker.uri:tcp://iot.eclipse.org:1883</variable>
+                  </variables>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
   <dependencies>
     <dependency>
       <groupId>org.eclipse.paho</groupId>
