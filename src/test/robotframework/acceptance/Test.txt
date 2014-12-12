@@ -19,6 +19,19 @@
 |               | Publish to MQTT and Disconnect    | ${broker.uri} | ${client.id}  |
 |               | ...                               | ${topic}      | ${EMPTY}      |
 
+| Subscribe and validate that a message is received
+|               | [Timeout]                                 | 30
+|               | ${time}                                   | Get Time      | epoch |
+|               | ${sub.client}                             | Catenate      | SEPARATOR=.   | robot.mqtt | ${time}
+|               | ${message}                                | Set Variable  | subscription test message |
+|               |  Run Keyword And Expect Error             | The expected payload didn't arrive in the topic
+|               | ...   | Subscribe to MQTT and Validate    | ${broker.uri} | ${sub.client} | sub.topic | ${message}    | 1000
+|               | Connect to MQTT Broker                    | ${broker.uri} | ${client.id}
+|               | Publish to MQTT Synchronously             | sub.topic     | ${message}    | 1     | false
+|               | Disconnect from MQTT Broker               |
+|               | Subscribe to MQTT and Validate            | ${broker.uri} | ${sub.client} | sub.topic | ${message}    | 1000
+
+
 
 | *Keywords*    |
 | Publish to MQTT and Disconnect    | [Documentation]   | Publish a message to MQTT queue and disconnect
