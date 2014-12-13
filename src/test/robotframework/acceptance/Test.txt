@@ -1,42 +1,50 @@
-| *Settings* | *Value*
-| Library    | MQTTLibrary
-| Library    | BuiltIn
-     
-| *Variables*   | *Value*
-| ${broker.uri} | tcp://127.0.0.1:1883
-| ${client.id}  | test.client
-| ${topic}      | test.topic
+| *Settings*    | *Value*
+| Library       | BuiltIn
+| Resource      | ../keywords/keywords.txt
+| Test Timeout  | 30 seconds
 
-| *Test Case*   | *Action*                      | *Argument*    | *Argument*    | *Argument*
+| *Test Cases*
 | Publish a non-empty message
-|               | ${time}                           | Get Time      | epoch
-|               | ${message}                        | Catenate      | test message  | ${time}
-|               | Publish to MQTT and Disconnect    | ${broker.uri} | ${client.id}  |
-|               | ...                               | ${topic}      | ${message}    |
-|               | Log                               | ${message}    |
+|       | ${time}       | Get Time      | epoch
+|       | ${message}    | Catenate      | test message  | ${time}
+|       | Publish to MQTT Broker and Disconnect | message=${message}
 
 | Publish an empty message
-|               | Publish to MQTT and Disconnect    | ${broker.uri} | ${client.id}  |
-|               | ...                               | ${topic}      | ${EMPTY}      |
+|       | Publish to MQTT Broker and Disconnect
 
-| Subscribe and validate that a message is received
-|               | [Timeout]                                 | 30
-|               | ${time}                                   | Get Time      | epoch |
-|               | ${sub.client}                             | Catenate      | SEPARATOR=.   | robot.mqtt | ${time}
-|               | ${message}                                | Set Variable  | subscription test message |
-|               |  Run Keyword And Expect Error             | The expected payload didn't arrive in the topic
-|               | ...   | Subscribe to MQTT and Validate    | ${broker.uri} | ${sub.client} | sub.topic | ${message}    | 1000
-|               | Connect to MQTT Broker                    | ${broker.uri} | ${client.id}
-|               | Publish to MQTT Synchronously             | sub.topic     | ${message}    | 1     | false
-|               | Disconnect from MQTT Broker               |
-|               | Subscribe to MQTT and Validate            | ${broker.uri} | ${sub.client} | sub.topic | ${message}    | 1000
+| Publish a message with QOS 1 and validate that the message is received
+|       | ${time}       | Get Time      | epoch |
+|       | ${client}     | Catenate      | SEPARATOR=.   | robot.mqtt | ${time}
+|       | ${topic}      | Set Variable  | test/mqtt_test_sub
+|       | ${message}    | Set Variable  | subscription test message |
+|       |  Run Keyword And Expect Error                 | The expected payload didn't arrive in the topic
+|       | ... | Subscribe to MQTT Broker and Validate   | client.id=${client}       | topic=${topic}        | message=${message}
+|       | Publish to MQTT Broker and Disconnect         | topic=${topic}            | message=${message}    | qos=1
+|       | Subscribe to MQTT Broker and Validate         | client.id=${client}       | topic=${topic}        | message=${message}
 
+| Publish multiple messages and confirm that validation succeeds only after correct message is published
+|       | Sleep         | 1s
+|       | ${time}       | Get Time      | epoch |
+|       | ${client}     | Catenate      | SEPARATOR=.   | robot.mqtt | ${time}
+|       | ${topic}      | Set Variable  | test/mqtt_test_sub
+|       | ${message}    | Set Variable  | subscription test message |
+|       |  Run Keyword And Expect Error                 | The expected payload didn't arrive in the topic
+|       | ... | Subscribe to MQTT Broker and Validate   | client.id=${client}       | topic=${topic}        | message=${message}
+|       | Publish to MQTT Broker and Disconnect         | topic=${topic}            | message=message1      | qos=1
+|       | Publish to MQTT Broker and Disconnect         | topic=${topic}            | message=message2      | qos=1
+|       |  Run Keyword And Expect Error                 | The expected payload didn't arrive in the topic
+|       | ... | Subscribe to MQTT Broker and Validate   | client.id=${client}       | topic=${topic}        | message=${message}
+|       | Publish to MQTT Broker and Disconnect         | topic=${topic}            | message=${message}    | qos=1
+|       | Publish to MQTT Broker and Disconnect         | topic=${topic}            | message=message3      | qos=1
+|       | Publish to MQTT Broker and Disconnect         | topic=${topic}            | message=message4      | qos=1
+|       | Subscribe to MQTT Broker and Validate         | client.id=${client}       | topic=${topic}        | message=${message}
 
-
-| *Keywords*    |
-| Publish to MQTT and Disconnect    | [Documentation]   | Publish a message to MQTT queue and disconnect
-|                                   | [Arguments]       | ${broker.uri} | ${client.id}
-|                                   | ...               | ${topic}      | ${message}
-|               | Connect to MQTT Broker        | ${broker.uri} | ${client.id}
-|               | Publish to MQTT Synchronously | ${topic}      | ${message}
-|               | Disconnect from MQTT Broker   |
+| Publish an empty message with QOS 1 and validate
+|       | Sleep         | 1s
+|       | ${time}       | Get Time      | epoch |
+|       | ${client}     | Catenate      | SEPARATOR=.   | robot.mqtt | ${time}
+|       | ${topic}      | Set Variable  | test/mqtt_test_sub
+|       |  Run Keyword And Expect Error                 | The expected payload didn't arrive in the topic
+|       | ... | Subscribe to MQTT Broker and Validate   | client.id=${client}       | topic=${topic}
+|       | Publish to MQTT Broker and Disconnect         | topic=${topic}            | qos=1
+|       | Subscribe to MQTT Broker and Validate         | client.id=${client}       | topic=${topic}
