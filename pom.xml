@@ -3,11 +3,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>net.randomsync</groupId>
-  <artifactId>robotframework-mqtt-java</artifactId>
+  <artifactId>robotframework-mqttlibrary-java</artifactId>
   <version>0.1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>robotframework-mqtt-java</name>
+  <name>robotframework-mqttlibrary-java</name>
   <description>MQTT keyword library for RobotFramework</description>
 
   <repositories>
@@ -18,9 +18,9 @@
   </repositories>
 
   <scm>
-    <connection>scm:git:git://github.com/randomsync/robotframework-mqtt-java.git</connection>
-    <developerConnection>scm:git:git@github.com:randomsync/robotframework-mqtt-java.git</developerConnection>
-    <url>https://github.com/randomsync/robotframework-mqtt-java</url>
+    <connection>scm:git:git://github.com/randomsync/robotframework-mqttlibrary-java.git</connection>
+    <developerConnection>scm:git:git@github.com:randomsync/robotframework-mqttlibrary-java.git</developerConnection>
+    <url>https://github.com/randomsync/robotframework-mqttlibrary-java</url>
   </scm>
 
   <properties>

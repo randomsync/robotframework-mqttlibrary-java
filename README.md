@@ -1,6 +1,6 @@
-# robotframework-mqtt-java
+# robotframework-mqttlibrary-java
 
-MQTT keyword library for RobotFramework 
+MQTT keyword library for RobotFramework in Java
 
 This is an initial POC...stay tuned for updates.
 
