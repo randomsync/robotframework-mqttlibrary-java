@@ -45,15 +45,20 @@ public class MQTTLibrary extends AnnotationLibrary {
     }
 
     @RobotKeyword
-    public void publishToMQTTSynchronously(String topic, String message)
+    public void publishToMQTTSynchronously(String topic, Object message)
             throws MqttException {
         publishToMQTTSynchronously(topic, message, 0, false);
     }
 
     @RobotKeywordOverload
-    public void publishToMQTTSynchronously(String topic, String message,
+    public void publishToMQTTSynchronously(String topic, Object message,
             int qos, boolean retained) throws MqttException {
-        MqttMessage msg = new MqttMessage(message.getBytes());
+        MqttMessage msg;
+        if (message instanceof String) {
+            msg = new MqttMessage(message.toString().getBytes());
+        } else {
+            msg = new MqttMessage((byte[]) message);
+        }
         msg.setQos(qos);
         msg.setRetained(retained);
         System.out.println("*INFO:" + System.currentTimeMillis()
