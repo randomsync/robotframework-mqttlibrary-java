@@ -11,11 +11,18 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+import org.robotframework.javalib.annotation.ArgumentNames;
 import org.robotframework.javalib.annotation.RobotKeyword;
 import org.robotframework.javalib.annotation.RobotKeywordOverload;
 import org.robotframework.javalib.annotation.RobotKeywords;
 import org.robotframework.javalib.library.AnnotationLibrary;
 
+/**
+ * A keyword library for Robot Framework. It provides keywords for performing
+ * various operations on an MQTT broker. See <a href="http://mqtt.org/">MQTT</a>
+ * for more details on MQTT specification.
+ *
+ */
 @RobotKeywords
 public class MQTTLibrary extends AnnotationLibrary {
 
@@ -33,7 +40,18 @@ public class MQTTLibrary extends AnnotationLibrary {
         super(KEYWORD_PATTERN);
     }
 
-    @RobotKeyword
+    /**
+     * Connect to an MQTT broker.
+     * 
+     * @param broker
+     *            Uri of the broker to connect to
+     * @param clientId
+     *            Client Id
+     * @throws MqttException
+     *             if there is an issue connecting to the broker
+     */
+    @RobotKeyword("Connect to MQTT Broker")
+    @ArgumentNames({ "broker", "clientId" })
     public void connectToMQTTBroker(String broker, String clientId)
             throws MqttException {
         client = new MqttClient(broker, clientId);
@@ -44,13 +62,39 @@ public class MQTTLibrary extends AnnotationLibrary {
                 + "* connected");
     }
 
-    @RobotKeyword
+    /**
+     * Publish a message to a topic
+     * 
+     * @param topic
+     *            topic to which the message will be published
+     * @param message
+     *            message payload to publish
+     * @throws MqttException
+     *             if there is an issue publishing to the broker
+     */
+    @RobotKeywordOverload
+    @ArgumentNames({ "topic", "message" })
     public void publishToMQTTSynchronously(String topic, Object message)
             throws MqttException {
         publishToMQTTSynchronously(topic, message, 0, false);
     }
 
-    @RobotKeywordOverload
+    /**
+     * Publish a message to a topic with specified qos and retained flag
+     * 
+     * @param topic
+     *            topic to which the message will be published
+     * @param message
+     *            message payload to publish
+     * @param qos
+     *            qos of the message
+     * @param retained
+     *            retained flag
+     * @throws MqttException
+     *             if there is an issue publishing to the broker
+     */
+    @RobotKeyword("Publish to MQTT Synchronously")
+    @ArgumentNames({ "topic", "message", "qos=0", "retained=false" })
     public void publishToMQTTSynchronously(String topic, Object message,
             int qos, boolean retained) throws MqttException {
         MqttMessage msg;
@@ -68,20 +112,39 @@ public class MQTTLibrary extends AnnotationLibrary {
                 + "* published");
     }
 
-    @RobotKeyword
+    /**
+     * Disconnect from MQTT Broker
+     */
+    @RobotKeyword("Disconnect from MQTT Broker")
     public void disconnectFromMQTTBroker() {
         if (client != null) {
             try {
                 client.disconnect();
             } catch (MqttException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                throw new RuntimeException(e.getLocalizedMessage());
             }
         }
     }
 
-    @RobotKeyword
-    public void subscribeToMQTTandValidate(String broker, String clientId,
+    /**
+     * Subscribe to an MQTT broker and validate that a message with specified
+     * payload is received
+     * 
+     * @param broker
+     *            Uri of broker to subscribe to
+     * @param clientId
+     *            Client Id
+     * @param topic
+     *            topic to subscribe to
+     * @param expectedPayload
+     *            payload to validate
+     * @param timeout
+     *            timeout for the payload to be received
+     */
+    @RobotKeyword("Subscribe to MQTT Broker and validate that it received a specific message")
+    @ArgumentNames({ "broker", "clientId", "topic", "expectedPayload",
+            "timeout" })
+    public void subscribeToMQTTAndValidate(String broker, String clientId,
             String topic, String expectedPayload, long timeout) {
         MqttClient client = null;
         try {
@@ -195,5 +258,14 @@ public class MQTTLibrary extends AnnotationLibrary {
         @Override
         public void deliveryComplete(IMqttDeliveryToken token) {
         }
+    }
+
+    @Override
+    public String getKeywordDocumentation(String keywordName) {
+        if (keywordName.equals("__intro__"))
+            return "Keyword Library for MQTT";
+        if (keywordName.equals("__init__"))
+            return "MQTT Library can be imported directly";
+        return super.getKeywordDocumentation(keywordName);
     }
 }
