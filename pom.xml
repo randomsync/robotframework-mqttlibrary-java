@@ -2,6 +2,12 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
+  <parent>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>7</version>
+  </parent>
+
   <groupId>net.randomsync</groupId>
   <artifactId>robotframework-mqttlibrary-java</artifactId>
   <version>0.1.0-SNAPSHOT</version>
@@ -9,6 +15,7 @@
 
   <name>robotframework-mqttlibrary-java</name>
   <description>MQTT keyword library for RobotFramework</description>
+  <url>https://github.com/randomsync/robotframework-mqttlibrary-java</url>
 
   <repositories>
     <repository>
@@ -80,6 +87,11 @@
             <goals>
               <goal>run</goal>
             </goals>
+            <configuration>
+              <variables>
+                <variable>broker.uri:tcp://iot.eclipse.org:1883</variable>
+              </variables>
+            </configuration>
           </execution>
         </executions>
         <configuration>
@@ -95,7 +107,7 @@
 
   <profiles>
     <profile>
-      <id>UseEclipseBroker</id>
+      <id>UseLocalBroker</id>
       <build>
         <plugins>
           <plugin>
@@ -110,7 +122,7 @@
                 </goals>
                 <configuration>
                   <variables>
-                    <variable>broker.uri:tcp://iot.eclipse.org:1883</variable>
+                    <variable>broker.uri:tcp://127.0.0.1:1883</variable>
                   </variables>
                 </configuration>
               </execution>
